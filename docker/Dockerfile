@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.5.0-devel-ubuntu22.04
+FROM nvidia/cuda:12.6.0-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/root/.local/bin:${PATH}"
@@ -12,8 +12,7 @@ RUN apt-get update && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y python3.12 python3.12-venv && \
-    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 && \
-    update-alternatives --set /usr/bin/python3 /usr/bin/python3.12 && \
+    update-alternatives --set python3 /usr/bin/python3.12 && \
     wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
     python3.12 get-pip.py && \
     rm get-pip.py && \
