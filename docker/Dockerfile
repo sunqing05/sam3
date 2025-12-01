@@ -11,7 +11,7 @@ RUN apt-get update && \
     git && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y python3.12 python3.12-distutils python3.12-venv && \
+    apt-get install -y python3.12 python3.12-venv && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 && \
     update-alternatives --set /usr/bin/python3 /usr/bin/python3.12 && \
     wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
