@@ -1,43 +1,31 @@
-# Use a standard NVIDIA CUDA image that is compatible with CUDA 12.6.
-# We'll choose a Python 3.12 image for stability and compatibility.
 FROM nvidia/cuda:12.5.0-devel-ubuntu22.04
 
-# Set environment variables for non-interactive install
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="/root/.local/bin:${PATH}"
 
-# Install common dependencies (git, wget, and basic build tools)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    software-properties-common \
+    build-essential \
     wget \
-    git \
-    build-essential && \
+    git && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y python3.12 python3.12-distutils python3.12-venv && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 && \
+    update-alternatives --set /usr/bin/python3 /usr/bin/python3.12 && \
+    wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
+    python3.12 get-pip.py && \
+    rm get-pip.py && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Python 3.12
-# Since the base image might have an older Python, we'll install 3.12 via PPA or manual build
-# For simplicity and robustness, we'll rely on the Python from the base image if a specific 3.12 is hard to manage.
-# A common practice is to use a specific Python image, but since we need CUDA, we'll install it here.
-# For this example, let's assume Python 3.12 is installed/available, or we use a Python 3.12 base image with CUDA.
-# Let's switch the base image to one with Python pre-installed for easier setup.
-FROM pytorch/pytorch:2.7.0-cuda12.5-cudnn8-devel
+RUN pip install torch==2.7.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
 
-# The base image already has Python and PyTorch/CUDA set up.
-# Confirm Python version (it should be 3.12+ in the PyTorch 2.7 image)
-# Run the installation steps
-
-# Set the working directory
 WORKDIR /app
-
-# Clone the repository
 RUN git clone https://github.com/facebookresearch/sam3.git
 WORKDIR /app/sam3
-
-# Install the package and core dependencies
-# PyTorch 2.7 is already installed in the base image, matching your requirement.
-# We need to ensure the local editable installation is done.
 RUN pip install -e .
 
-# Install additional dependencies for example notebooks
 RUN pip install -e ".[notebooks]"
 RUN pip install -e ".[train,dev]"
 
